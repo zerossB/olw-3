@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Models\Address
@@ -19,10 +21,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $complement
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property string|null $deleted_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\User $user
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Address newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Address newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Address onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder|Address query()
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereAddress($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereCity($value)
@@ -36,10 +40,28 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereZipcode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Address withoutTrashed()
  *
  * @mixin \Eloquent
  */
 class Address extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
+
+    protected $fillable = [
+        'user_id',
+        'address',
+        'city',
+        'state',
+        'zipcode',
+        'district',
+        'number',
+        'complement',
+    ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }

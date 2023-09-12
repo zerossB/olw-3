@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Models\Sku
@@ -14,10 +17,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $price
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property string|null $deleted_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Feature> $features
+ * @property-read int|null $features_count
+ * @property-read \App\Models\Product $product
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Sku newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Sku newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Sku onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder|Sku query()
  * @method static \Illuminate\Database\Eloquent\Builder|Sku whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Sku whereDeletedAt($value)
@@ -26,10 +33,40 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Sku wherePrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Sku whereProductId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Sku whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Sku withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Sku withoutTrashed()
  *
  * @mixin \Eloquent
  */
 class Sku extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
+
+    protected $fillable = [
+        'product_id',
+        'name',
+        'price',
+    ];
+
+    protected $casts = [
+        'price' => 'decimal',
+    ];
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    public function orders(): BelongsToMany
+    {
+        return $this->belongsToMany(Order::class)
+            ->using(OrderSku::class);
+    }
+
+    public function features(): BelongsToMany
+    {
+        return $this->belongsToMany(Feature::class)
+            ->using(FeatureSku::class)
+            ->withPivot('value');
+    }
 }

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Models\Shipping
@@ -21,10 +23,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $status
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property string|null $deleted_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\Order $order
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Shipping newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Shipping newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Shipping onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder|Shipping query()
  * @method static \Illuminate\Database\Eloquent\Builder|Shipping whereAddress($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Shipping whereCity($value)
@@ -40,10 +44,30 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Shipping whereTrackingCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Shipping whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Shipping whereZipcode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shipping withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Shipping withoutTrashed()
  *
  * @mixin \Eloquent
  */
 class Shipping extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
+
+    protected $fillable = [
+        'order_id',
+        'address',
+        'city',
+        'state',
+        'zipcode',
+        'district',
+        'number',
+        'complement',
+        'tracking_code',
+        'status',
+    ];
+
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(Order::class);
+    }
 }
