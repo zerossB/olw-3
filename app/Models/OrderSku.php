@@ -33,6 +33,10 @@ class OrderSku extends Model
         'price',
     ];
 
+    protected $casts = [
+        'product' => 'json',
+    ];
+
     public function sku(): BelongsTo
     {
         return $this->belongsTo(Sku::class);
