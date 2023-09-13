@@ -21,7 +21,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Feature> $features
  * @property-read int|null $features_count
  * @property-read \App\Models\Product $product
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Order> $skus
+ * @property-read int|null $skus_count
  *
+ * @method static \Database\Factories\SkuFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|Sku newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Sku newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Sku onlyTrashed()
@@ -60,5 +63,12 @@ class Sku extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function features(): BelongsToMany
+    {
+        return $this->belongsToMany(Feature::class)
+            ->using(FeatureSku::class)
+            ->withPivot('value');
     }
 }

@@ -17,12 +17,19 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $user_id
  * @property string|null $session_id
  * @property string|null $total
- * @property int $status
+ * @property OrderStatusEnum $status
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payment> $payments
+ * @property-read int|null $payments_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Shipping> $shippings
+ * @property-read int|null $shippings_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Sku> $skus
+ * @property-read int|null $skus_count
  * @property-read \App\Models\User|null $user
  *
+ * @method static \Database\Factories\OrderFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|Order newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Order newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Order onlyTrashed()
@@ -64,7 +71,8 @@ class Order extends Model
     public function skus(): BelongsToMany
     {
         return $this->belongsToMany(Sku::class)
-            ->using(OrderSku::class);
+            ->using(OrderSku::class)
+            ->withPivot('quantity', 'unitary_price', 'product');
     }
 
     public function shippings(): HasMany
