@@ -59,7 +59,6 @@ class Order extends Model
     ];
 
     protected $casts = [
-        'total' => 'decimal',
         'status' => OrderStatusEnum::class,
     ];
 

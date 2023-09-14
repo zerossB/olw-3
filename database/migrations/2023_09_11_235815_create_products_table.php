@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description');
-            $table->text('tecnic_description');
+            $table->text('technical_description');
 
             $table->timestamps();
             $table->softDeletes();

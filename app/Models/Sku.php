@@ -51,10 +51,6 @@ class Sku extends Model
         'price',
     ];
 
-    protected $casts = [
-        'price' => 'decimal',
-    ];
-
     public function skus(): BelongsToMany
     {
         return $this->belongsToMany(Order::class)->using(OrderSku::class);
